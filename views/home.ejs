@@ -1,0 +1,159 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard • ShortURL</title>
+
+  <!-- ① Modern font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ----------  Core Design Tokens  ---------- */
+    :root{
+      --bg-grad: linear-gradient(135deg,#e0eaff 0%,#fef7ff 100%);
+      --card-bg: rgba(255,255,255,0.55);
+      --card-blur: 12px;
+      --border-clr:#e3e9ff;
+      --txt-main:#1f2457;
+      --txt-sub:#60647e;
+      --pri:#635bff;
+      --pri-dark:#5549ff;
+      --danger:#ff5757;
+      --radius:14px;
+    }
+
+    /* ----------  Base  ---------- */
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:'Poppins',sans-serif;
+      background:var(--bg-grad);min-height:100vh;
+      color:var(--txt-main);display:flex;justify-content:center;align-items:flex-start;
+      padding:60px 16px;
+    }
+    h1{font-weight:600;margin-bottom:24px;text-align:center}
+    a{color:var(--pri);text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    /* ----------  Card Container  ---------- */
+    .card{
+      width:100%;max-width:960px;padding:40px 32px;
+      background:var(--card-bg);
+      backdrop-filter:blur(var(--card-blur));
+      border:1px solid var(--border-clr);
+      border-radius:var(--radius);
+      box-shadow:0 18px 30px rgba(37,44,97,0.08);
+      animation:fadeSlide .6s ease;
+    }
+    @keyframes fadeSlide{from{opacity:0;transform:translateY(15px)}}
+
+    /* ----------  Form  ---------- */
+    form{display:flex;gap:12px;margin-bottom:32px}
+    input[type=url]{
+      flex:1;border:1px solid var(--border-clr);border-radius:var(--radius);
+      padding:14px 18px;font-size:1rem;color:var(--txt-main);background:#fff;
+      transition:border .25s;
+    }
+    input[type=url]:focus{outline:none;border-color:var(--pri)}
+    .btn{
+      border:none;border-radius:var(--radius);padding:0 26px;cursor:pointer;
+      font-weight:500;color:#fff;background:var(--pri);
+      transition:transform .15s,box-shadow .3s,background .15s;
+    }
+    .btn:hover{background:var(--pri-dark)}
+    .btn:active{transform:scale(.97)}
+    .btn-copy,.btn-del{
+      background:none;border:none;cursor:pointer;font-size:1rem;
+      color:var(--pri);margin-left:6px;vertical-align:middle;
+      transition:color .2s;
+    }
+    .btn-del{color:var(--danger)}
+    .btn-copy:hover{color:var(--pri-dark)}
+    .btn-del:hover{color:#ff2b2b}
+
+    /* ----------  Alert  ---------- */
+    .alert{
+      background:#dfffe7;border:1px solid #b4ffcb;color:#05662c;
+      display:flex;justify-content:space-between;align-items:center;
+      padding:14px 18px;border-radius:var(--radius);margin-bottom:26px;
+      animation:fadeSlide .5s ease;
+    }
+
+    /* ----------  Table  ---------- */
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:14px 12px;text-align:left}
+    th{font-weight:500;background:rgba(99,91,255,0.08)}
+    tbody tr{transition:background .2s}
+    tbody tr:hover{background:rgba(99,91,255,0.06)}
+    td.linkCol{white-space:nowrap}
+    td.longUrl{max-width:340px;overflow:hidden;text-overflow:ellipsis}
+  </style>
+</head>
+<body>
+<% const query = locals.query || {}; %>
+
+  <div class="card">
+    <h1>Your Short URLs</h1>
+
+    <% if (query.new) { %>
+      <div class="alert">
+        <span id="newUrl">http://localhost:8001/<%= query.new %></span>
+        <button class="btn-copy" onclick="copy('#newUrl')">Copy</button>
+      </div>
+    <% } %>
+
+    <form method="POST" action="/url">
+      <input type="url" name="url" placeholder="Paste a long URL to shorten" required>
+      <button class="btn">Shorten</button>
+    </form>
+
+    <table>
+      <thead>
+        <tr><th>#</th><th>Short</th><th>Destination</th><th>Clicks</th><th></th></tr>
+      </thead>
+      <tbody>
+        <% urls.forEach((u,i)=>{ %>
+          <tr id="row-<%= u.shortId %>">
+            <td><%= i+1 %></td>
+            <td class="linkCol">
+              <a href="/<%= u.shortId %>" target="_blank">/<%= u.shortId %></a>
+              <button class="btn-copy" onclick="copy('http://localhost:8001/<%= u.shortId %>')">Copy</button>
+            </td>
+            <td class="longUrl"><%= u.redirectURL %></td>
+            <td><%= u.visitHistory.length %></td>
+            <td>
+              <button class="btn-del" title="Delete" onclick="del('<%= u.shortId %>')">✕</button>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+<script>
+function copy(textOrSelector){
+  const str = textOrSelector.startsWith('#')
+        ? document.querySelector(textOrSelector).textContent
+        : textOrSelector;
+  navigator.clipboard.writeText(str).then(()=>toast('Copied!'));
+}
+function del(id){
+  if(!confirm('Delete this short URL?')) return;
+  fetch('/url/'+id,{method:'DELETE'})
+    .then(r=>r.ok && document.getElementById('row-'+id).remove());
+}
+function toast(msg){
+  const n=document.createElement('div');
+  n.textContent=msg;
+  Object.assign(n.style,{
+    position:'fixed',bottom:'30px',right:'30px',background:'var(--pri)',
+    color:'#fff',padding:'12px 18px',borderRadius:'var(--radius)',
+    boxShadow:'0 6px 15px rgba(0,0,0,.15)',opacity:'0',transition:'opacity .3s'
+  });
+  document.body.appendChild(n); setTimeout(()=>n.style.opacity='1',30);
+  setTimeout(()=>{n.style.opacity='0';setTimeout(()=>n.remove(),300)},2000);
+}
+</script>
+</body>
+</html>

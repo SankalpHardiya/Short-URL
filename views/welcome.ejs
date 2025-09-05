@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ShortURL • Shorten links instantly</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg-grad:linear-gradient(135deg,#e0eaff 0%,#fef7ff 100%);
+      --pri:#635bff;--pri-dark:#5549ff;--radius:14px;
+      --txt-main:#1f2457;--txt-sub:#50556f;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:'Poppins',sans-serif;background:var(--bg-grad);
+      color:var(--txt-main);min-height:100vh;display:flex;flex-direction:column;
+      align-items:center;justify-content:center;padding:40px 16px;text-align:center;
+    }
+    h1{font-size:2.4rem;font-weight:600;margin-bottom:14px}
+    p.lead{font-size:1.1rem;color:var(--txt-sub);max-width:520px;margin-bottom:32px}
+    .cta{display:flex;gap:18px;margin-bottom:60px;flex-wrap:wrap;justify-content:center}
+    .btn{
+      padding:14px 34px;border:none;border-radius:var(--radius);cursor:pointer;
+      font-weight:500;font-size:1rem;color:#fff;background:var(--pri);
+      transition:background .15s,transform .15s;text-decoration:none;
+    }
+    .btn:hover{background:var(--pri-dark)}
+    .btn:active{transform:scale(.97)}
+    /* Feature cards */
+    .grid{display:grid;gap:22px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));max-width:960px;width:100%}
+    .card{
+      background:#fff;border-radius:var(--radius);padding:28px 24px;
+      box-shadow:0 8px 18px rgba(0,0,0,.06);transition:transform .25s;
+    }
+    .card:hover{transform:translateY(-6px)}
+    .card h3{font-size:1.2rem;font-weight:600;margin-bottom:8px}
+    .card p{font-size:.9rem;color:var(--txt-sub);line-height:1.5}
+  </style>
+</head>
+<body>
+
+  <h1>Shrink links. Share faster.</h1>
+  <p class="lead">
+    ShortURL turns messy, long web addresses into sleek short links you can track, copy, and manage—all in one place.
+  </p>
+
+  <div class="cta">
+    <a class="btn" href="/login">Login</a>
+    <a class="btn" href="/signup" style="background:#fff;color:var(--pri);border:2px solid var(--pri)">Signup&nbsp;Free</a>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h3>Instant shortening</h3>
+      <p>Paste any long URL and get a branded short link in a flash—no clutter, no ads.</p>
+    </div>
+    <div class="card">
+      <h3>Click analytics</h3>
+      <p>Track how many times each link is clicked and view full timestamp history.</p>
+    </div>
+    <div class="card">
+      <h3>Personal dashboard</h3>
+      <p>All your links are saved to your account, neatly organized and always editable.</p>
+    </div>
+    <div class="card">
+      <h3>Secure &amp; private</h3>
+      <p>Accounts protected by JWT auth; your data lives securely in our database.</p>
+    </div>
+  </div>
+
+</body>
+</html>
